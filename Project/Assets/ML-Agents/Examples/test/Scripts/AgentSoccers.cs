@@ -60,13 +60,13 @@ public class AgentSoccers : Agent
         if (m_BehaviorParameters.TeamId == (int)Team.Blue)
         {
             team = Team.Blue;
-            initialPos = new Vector3(transform.position.x - 5f, 2.5f, transform.position.z);
+            initialPos += new Vector3(transform.position.x - 5f, 2.5f, transform.position.z);
             rotSign = 1f;
         }
         else
         {
             team = Team.Purple;
-            initialPos = new Vector3(transform.position.x + 5f, 2.5f, transform.position.z);
+            initialPos += new Vector3(transform.position.x + 5f, 2.5f, transform.position.z);
             rotSign = -1f;
         }
 
@@ -77,13 +77,16 @@ public class AgentSoccers : Agent
         }
         else if (position == Position.Striker)
         {
-            m_LateralSpeed = 0.3f;
-            m_ForwardSpeed = 1.3f;
+            m_LateralSpeed = 0.5f;
+            m_ForwardSpeed = 1.5f;
         }
         else
         {
+            //Back 
+            /*m_LateralSpeed = 0.3f;
+            m_ForwardSpeed = 1.0f;*/
             m_LateralSpeed = 0.3f;
-            m_ForwardSpeed = 1.0f;
+            m_ForwardSpeed = 1.2f;
         }
         m_SoccerSettings = FindObjectOfType<SoccersSettings>();
         agentRb = GetComponent<Rigidbody>();
@@ -97,31 +100,37 @@ public class AgentSoccers : Agent
         var dirToGo = Vector3.zero;
         var rotateDir = Vector3.zero;
 
-        m_KickPower = 0f;
+        m_KickPower = 2.0f;
+        //m_KickPower = 0f;
         //Let kick power to be a variable returned.
 
         var forwardAxis = act[0];
         var rightAxis = act[1];
         var rotateAxis = act[2];
-        //m_KickPower = act[3];
-
+        //var power = act[3]; 
+        //m_KickPower = m_KickPower * power;
+         
         switch (forwardAxis)
         {
             case 1:
-                dirToGo = transform.forward * m_ForwardSpeed;
+                //dirToGo = transform.forward * m_ForwardSpeed;
+                dirToGo += transform.forward * m_ForwardSpeed;
                 m_KickPower = 1f;
                 break;
             case 2:
-                dirToGo = transform.forward * -m_ForwardSpeed;
+                //dirToGo = transform.forward * -m_ForwardSpeed;
+                dirToGo += transform.forward * -m_ForwardSpeed;
                 break;
         }
 
         switch (rightAxis)
         {
             case 1:
-                dirToGo = transform.right * m_LateralSpeed;
+                //dirToGo = transform.right * m_LateralSpeed;
+                dirToGo += transform.right * m_LateralSpeed;
                 break;
             case 2:
+                //dirToGo += transform.right * -m_LateralSpeed;
                 dirToGo = transform.right * -m_LateralSpeed;
                 break;
         }
