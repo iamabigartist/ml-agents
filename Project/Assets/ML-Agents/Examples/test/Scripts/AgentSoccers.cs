@@ -107,15 +107,15 @@ public class AgentSoccers : Agent
         var forwardAxis = act[0];
         var rightAxis = act[1];
         var rotateAxis = act[2];
-        //var power = act[3]; 
-        //m_KickPower = m_KickPower * power;
+        var power = act[3]; 
+        m_KickPower = m_KickPower * power;
          
         switch (forwardAxis)
         {
             case 1:
                 //dirToGo = transform.forward * m_ForwardSpeed;
                 dirToGo += transform.forward * m_ForwardSpeed;
-                m_KickPower = 1f;
+                //m_KickPower = 1f;
                 break;
             case 2:
                 //dirToGo = transform.forward * -m_ForwardSpeed;
@@ -197,6 +197,11 @@ public class AgentSoccers : Agent
         {
             discreteActionsOut[1] = 2;
         }
+        if(Input.GetKey(KeyCode.Space))
+        {
+            discreteActionsOut[3] = 2;
+        }
+        discreteActionsOut[3] = 1;
     }
     /// <summary>
     /// Used to provide a "kick" to the ball.
