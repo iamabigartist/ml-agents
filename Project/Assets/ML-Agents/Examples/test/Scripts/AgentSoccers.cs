@@ -40,13 +40,13 @@ public class AgentSoccers : Agent
     BehaviorParameters m_BehaviorParameters;
     public Vector3 initialPos;
     public float rotSign;
-
+    SoccerEnv envController;
     EnvironmentParameters m_ResetParams;
 
     public override void Initialize()
     {
         //Get soccer environment
-        SoccerEnv envController = GetComponentInParent<SoccerEnv>();
+        envController = GetComponentInParent<SoccerEnv>();
         if (envController != null)
         {
             m_Existential = 1f / envController.MaxEnvironmentSteps;
@@ -164,6 +164,9 @@ public class AgentSoccers : Agent
             // Existential penalty for Strikers
             AddReward(-m_Existential);
         }
+        
+        Vector3 ballPosition = envController.ball.transform.position;
+        AddReward(0.1f / (1 + Vector3.Distance(ballPosition, transform.position)));
         MoveAgent(actionBuffers.DiscreteActions);
     }
 
