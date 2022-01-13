@@ -200,11 +200,12 @@ public class AgentSoccers : Agent
         {
             discreteActionsOut[1] = 2;
         }
-        if(Input.GetKey(KeyCode.Space))
+        discreteActionsOut[3] = 1;
+        if (Input.GetKey(KeyCode.Space))
         {
             discreteActionsOut[3] = 2;
         }
-        discreteActionsOut[3] = 1;
+        
     }
     /// <summary>
     /// Used to provide a "kick" to the ball.

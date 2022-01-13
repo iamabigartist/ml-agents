@@ -104,6 +104,8 @@ public class QLearnAgent : MonoBehaviour
                 nextMove.Add(move);
             }
         }
+        if (nextMove.Count == 0)
+            return Vector3.zero;
         int i = Random.Range(0, nextMove.Count);
         float difference = (m_reward + m_env.DiscountRate * GetValue(transform.position + nextMove[i])) - maxValue;
         m_env.updateWeight(difference, agentNum, transform.position);
@@ -176,21 +178,23 @@ public class QLearnAgent : MonoBehaviour
         string id;
         Dictionary<string, Vector3> distance = new Dictionary<string, Vector3>();
         float sum = 0;
+        float d;
         foreach (var item in m_env.AgentsList)
         {
             if(item != gameObject)
             {
                 id = item.GetComponent<QLearnAgent>().agentNum.ToString();
                 distance.Add(id, item.transform.position - position);
-                sum += Vector3.Distance(Vector3.zero, item.transform.position - position);
+                
             }
         }
-        sum += Vector3.Distance(Vector3.zero, m_env.ball.transform.position - position);
+        distance.Add("ball", m_env.ball.transform.position - position);
         foreach (string i in distance.Keys)
         {
-            qvalue += Vector3.Dot(distance[i] / sum, m_env.getWeight(i));
+            d = Vector3.Dot(distance[i] / sum, m_env.getWeight(i));
+            if (d != 0)
+                qvalue += 1/d;
         }
-        qvalue += Vector3.Dot((m_env.ball.transform.position - position)/sum, m_env.getWeight("ball"));
         return qvalue;
     }
     public void ResetAgent()

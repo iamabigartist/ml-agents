@@ -7,8 +7,14 @@ public class QLearnEnv : MonoBehaviour
     public List<GameObject> AgentsList = new List<GameObject>();
     public float width;
     public float length;
+    public GameObject wall_z;
+    public GameObject wall__z;
+    public GameObject wall_x;
+    public GameObject wall__x;
+
     [SerializeField]
     public int Max = 50000;
+    public int count = 0;
     [SerializeField]
     public float epsilon;
     List<QLearnAgent> scriptsList = new List<QLearnAgent>();
@@ -28,7 +34,7 @@ public class QLearnEnv : MonoBehaviour
         length = 14.0f;
         DiscountRate = 0.5f;
         epsilon = 0.2f;
-        learningRate = 0.1f;
+        learningRate = 0.01f;
         for (int i = 0; i < AgentsList.Count; i++)
         {
             featuresWeight.Add(1);
@@ -50,6 +56,10 @@ public class QLearnEnv : MonoBehaviour
         {
             item.transform.Translate(item.GetComponent<QLearnAgent>().getAction(), Space.Self);
             item.GetComponent<QLearnAgent>().SetReward(0);
+        }
+        if(count ++ > Max)
+        {
+            ResetEnv();
         }
     }
     public Vector3 getWeight(string idx)
@@ -93,6 +103,14 @@ public class QLearnEnv : MonoBehaviour
 
             }
             
+        }
+    }
+    public void ResetEnv()
+    {
+        ball.GetComponent<QLearnBall>().ResetBall();
+        foreach(var agent in AgentsList)
+        {
+            agent.GetComponent<QLearnAgent>().ResetAgent();
         }
     }
 }
