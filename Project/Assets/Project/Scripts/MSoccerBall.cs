@@ -57,14 +57,14 @@ namespace Project
             {
                 Environment.Goal( 1, last_agent );
             }
-            if (collided.CompareTag( player_tags[0] )||collided.CompareTag( player_tags[1] ))
+            if (collided.CompareTag( player_tags[0] ) || collided.CompareTag( player_tags[1] ))
             {
-                last_agent= collided.GetComponent<MSoccerPlayerAgent>();
+                last_agent = collided.GetComponent<MSoccerPlayerAgent>();
             }
-            // if (collided.CompareTag( "wall" ))
-            // {
-            //     Environment.Goal( last_kick_team_id_reverse );
-            // }
+            if (collided.CompareTag( "wall" ))
+            {
+                last_agent.AddReward( Environment.wall_collide_punishment );
+            }
 
 
         }

@@ -37,8 +37,11 @@ namespace Project
         public float player_base_speed = 2;
         public float player_base_angular_speed = 100;
         public float player_kick_power = 200;
-        public float player_touch_ball_reward = 0.2f;
-        public float player_time_reward = 2f;
+        public float player_touch_ball_reward = 0.05f;
+        public float palyer_touch_ball_cooldown = 100;
+        public float player_time_reward = 1f;
+        public float player_body_collision_punishment = 0.05f;
+        public float wall_collide_punishment = 0.1f;
         public List<PositionConfig> positions;
 
     #endregion
@@ -127,9 +130,9 @@ namespace Project
         public void Goal(int scored_team_id, MSoccerPlayerAgent agent)
         {
             int enemy_team_id = scored_team_id == 0 ? 1 : 0;
-            float reward = 15 * (1 - cur_step * step_ratio);
+            float reward = 50 * (1 - cur_step * step_ratio);
             agent_groups[scored_team_id].AddGroupReward( reward );
-            agent_groups[enemy_team_id].AddGroupReward( -7.5f );
+            agent_groups[enemy_team_id].AddGroupReward( -40f );
             agent.AddReward( reward );
             EndEpisode( false );
             InitEpisode();

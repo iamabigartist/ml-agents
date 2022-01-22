@@ -32,6 +32,7 @@ namespace Project
     #region State
 
         float m_action_kick_power;
+        int touch_ball_timer;
 
     #endregion
 
@@ -58,6 +59,9 @@ namespace Project
             sensor.AddObservation( Environment.ball_rigidbody.velocity - Rigidbody.velocity );
         }
 
+
+
+
         void OnCollisionEnter(Collision collision)
         {
             var collided = collision.gameObject;
@@ -65,7 +69,13 @@ namespace Project
             {
                 return;
             }
-            AddReward( Environment.player_touch_ball_reward );
+
+            if (touch_ball_timer >= Environment.palyer_touch_ball_cooldown)
+            {
+                touch_ball_timer = 0;
+                AddReward( Environment.player_touch_ball_reward );
+            }
+
             var force =
                 m_action_kick_power * Environment.player_kick_power * m_position_config.kick_power_scale *
                 Mathf.Clamp( 0.5f * Vector3.Dot( Rigidbody.velocity, transform.forward ), 0, 10 );
@@ -73,6 +83,20 @@ namespace Project
             collision.rigidbody.AddForce( direction * force );
 
         }
+
+        void OnCollisionStay(Collision collision)
+        {
+            var collided = collision.gameObject;
+            if (!(collided.CompareTag( "agent_0" ) || collided.CompareTag( "agent_1" )))
+            {
+                return;
+            }
+
+            AddReward( -Environment.player_body_collision_punishment );
+
+
+        }
+
         public override void Heuristic(in ActionBuffers actionsOut)
         {
             // var acts = actionsOut.DiscreteActions;
@@ -129,22 +153,22 @@ namespace Project
 
 
             //to ball distance reward
-            AddReward( 0.07f * Mathf.Exp( -0.1f *
-                                         Vector3.Distance(
-                                             position,
-                                             position1 ) ) );
+            AddReward( 0.1f * Mathf.Exp( -0.1f *
+                                          Vector3.Distance(
+                                              position,
+                                              position1 ) ) );
 
             //Controlling ball reward
             AddReward( Vector3.Distance(
                 position,
                 position1 ) < 0.3f ?
-                0.07f / (0.0001f + Vector3.Distance( Environment.ball_rigidbody.velocity, Rigidbody.velocity )) : 0 );
+                0.1f / (0.0001f + Vector3.Distance( Environment.ball_rigidbody.velocity, Rigidbody.velocity )) : 0 );
 
             //Goal gate reward
             AddReward( 0.1f / (1 +
-                                Vector3.Distance(
-                                    Environment.goal_transforms[team_id_reverse].position,
-                                    position )) );
+                               Vector3.Distance(
+                                   Environment.goal_transforms[team_id_reverse].position,
+                                   position )) );
 
             var acts_discrete = actionsBuffers.DiscreteActions;
             var acts_continuous = actionsBuffers.DiscreteActions;
@@ -155,6 +179,11 @@ namespace Project
                 b_table[acts_discrete[0]],
                 b_table[acts_discrete[1]],
                 b_table[acts_discrete[2]] );
+
+            if (touch_ball_timer < Environment.palyer_touch_ball_cooldown)
+            {
+                touch_ball_timer++;
+            }
         }
         public override void OnEpisodeBegin()
         {
@@ -190,8 +219,8 @@ namespace Project
             transform1.Rotate( y_vector, Time.deltaTime * Environment.player_base_angular_speed );
             Rigidbody.AddForce( (x_vector + z_vector) * Environment.player_base_speed, ForceMode.VelocityChange );
 
-            AddReward( -Environment.step_ratio * 2 * Mathf.Exp( -2f / (0.01f + Rigidbody.velocity.magnitude) ) );
-            AddReward( -Environment.step_ratio * 4 * Mathf.Exp( -2f / (0.01f + Rigidbody.angularVelocity.magnitude) ) );
+            // AddReward( -Environment.step_ratio * 0.125f * Mathf.Exp( -2f / (0.01f + Rigidbody.velocity.magnitude) ) );
+            // AddReward( -Environment.step_ratio * 0.25f * Mathf.Exp( -2f / (0.01f + Rigidbody.angularVelocity.magnitude) ) );
         }
 
 
@@ -239,7 +268,7 @@ namespace Project
                 acts_discrete[0] = 0;
             }
 
-            if (vector.magnitude < 0.1f)
+            if (vector.magnitude < 0.05f)
             {
                 acts_discrete[0] = 0;
             }
